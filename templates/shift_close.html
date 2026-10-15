@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>တစ်နေ့တာ စာရင်းချုပ် (Shift Close)</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode .container {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .summary-row {
+            border-color: #334155 !important;
+        }
+
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main);
+            padding: 20px; 
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+        .summary-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 14px 0; 
+            border-bottom: 1px solid var(--border-color); 
+            font-size: 16px; 
+        }
+        .btn { 
+            background: #0f172a; 
+            color: white; 
+            padding: 12px; 
+            width: 100%; 
+            border: none; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 20px; 
+        }
+        body.dark-mode .btn {
+            background: #334155;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📑 တစ်နေ့တာ စာရင်းချုပ် (Shift Close Report)</h2>
+        <div class="summary-row"><span>စုစုပေါင်း ငွေဝင် (Cash In):</span> <strong style="color: #10b981;">{{ "{:,.0f}".format(total_in) }} Ks</strong></div>
+        <div class="summary-row"><span>စုစုပေါင်း ငွေထွက် (Cash Out):</span> <strong style="color: #ef4444;">{{ "{:,.0f}".format(total_out) }} Ks</strong></div>
+        <div class="summary-row"><span>ရရှိကော်မရှင် စုစုပေါင်း:</span> <strong style="color: #2563eb;">{{ "{:,.0f}".format(total_fee) }} Ks</strong></div>
+        
+        <button class="btn" onclick="window.print()">🖨️ စာရင်းချုပ် Report ကို Print ထုတ်မည်</button>
+        <br><br>
+        <a href="/dashboard" style="text-decoration: none; color: #64748b; font-weight: bold;">⬅ Dashboard သို့ ပြန်ရန်</a>
+    </div>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
+</body>
+</html>

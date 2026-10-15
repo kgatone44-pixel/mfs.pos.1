@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFS POS - ငွေလွှဲ/ငွေထုတ် မှတ်တမ်းများ</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --cash-in: #10b981;
+            --cash-out: #ef4444;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode .card {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode table, body.dark-mode th, body.dark-mode td {
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode th {
+            background-color: #0f172a !important;
+        }
+
+        body {
+            font-family: 'Pyidaungsu', 'Padauk', 'Myanmar Text', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .navbar {
+            background-color: #0f172a;
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .back-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #475569;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            min-width: 600px;
+        }
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>💸 ငွေလွှဲ / ငွေထုတ် မှတ်တမ်းအပြည့်အစုံ</h2>
+        <a href="/dashboard" class="back-btn">⬅ Dashboard သို့ ပြန်ရန်</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h3 style="margin-top: 0;">ပြုလုပ်ခဲ့ပြီးသမျှ စာရင်းဇယားများ</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>စဉ်</th>
+                        <th>အချိန်</th>
+                        <th>အမျိုးအစား</th>
+                        <th>ဆိုင်အကောင့်</th>
+                        <th>ဖုန်းနံပါတ်</th>
+                        <th>ပမာဏ</th>
+                        <th>ကော်မရှင်</th>
+                        <th>မှတ်ချက်</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if transactions %}
+                        {% for tx in transactions %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td style="color: var(--text-muted); font-size: 13px;">{{ tx[6] }}</td>
+                            <td>
+                                {% if tx[0] == 'cash_in' %}
+                                    <span style="color: var(--cash-in); font-weight: bold;">ငွေလွှဲ (Cash In)</span>
+                                {% else %}
+                                    <span style="color: var(--cash-out); font-weight: bold;">ငွေထုတ် (Cash Out)</span>
+                                {% endif %}
+                            </td>
+                            <td><strong>{{ tx[1] }}</strong></td>
+                            <td>{{ tx[2] }}</td>
+                            <td>{{ "{:,.0f}".format(tx[3]) }} Ks</td>
+                            <td style="color: #16a34a; font-weight: bold;">{{ "{:,.0f}".format(tx[4]) }} Ks</td>
+                            <td>{{ tx[5] if tx[5] else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">မှတ်တမ်း တစ်စုံတစ်ရာ မရှိသေးပါ။</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        })();
+    </script>
+</body>
+</html>
