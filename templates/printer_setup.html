@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">Printer & Receipt Setup</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode .container {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        body.dark-mode input {
+            background-color: #0f172a !important;
+            color: white !important;
+            border-color: #334155 !important;
+        }
+
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main);
+            padding: 20px; 
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 8px 0 15px 0; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-family: inherit;
+        }
+        button { 
+            background: var(--primary); 
+            color: white; 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            width: 100%;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="pageHeading">🖨️ Printer & Receipt Setup</h2>
+        <p id="pageDesc" style="color: var(--text-muted); font-size: 14px;">Thermal Receipt Printer (Bluetooth / USB) ချိတ်ဆက်ရန် ဆိုင်အချက်အလက်များ သတ်မှတ်ပါ။</p>
+        
+        <label id="lblShopName">ဆိုင်အမည် (Shop Name):</label>
+        <input type="text" id="shopName" value="Prime Dock MFS Express">
+        
+        <label id="lblShopAddress">ဆိုင်လိပ်စာ (Address):</label>
+        <input type="text" id="shopAddress" value="ရန်ကုန်မြို့">
+        
+        <label id="lblShopPhone">ဖုန်းနံပါတ် (Phone Number):</label>
+        <input type="text" id="shopPhone" value="09-xxxxxxxxx">
+
+        <label id="lblShopFooter">ဖြတ်ပိုင်းအောက်ခြေတွင် ပြသမည့် စာသား (Footer Note):</label>
+        <input type="text" id="shopFooter" value="ကျေးဇူးတင်ပါသည်၊ ပြန်လည်လာခဲ့ပါရန် ဖိတ်ခေါ်ပါသည်။">
+
+        <button onclick="savePrinterSettings()" id="btnSave">💾 ဆက်တင်များ သိမ်းမည်</button>
+        <br><br>
+        <a href="/dashboard" id="backDashboard" style="text-decoration: none; color: var(--primary); font-weight: bold;">⬅ Dashboard သို့ ပြန်ရန်</a>
+    </div>
+
+    <script>
+        const translations = {
+            my: {
+                pageTitle: "Printer & Receipt Setup",
+                pageHeading: "🖨️ Printer & Receipt Setup",
+                pageDesc: "Thermal Receipt Printer (Bluetooth / USB) ချိတ်ဆက်ရန် ဆိုင်အချက်အလက်များ သတ်မှတ်ပါ။",
+                lblShopName: "ဆိုင်အမည် (Shop Name):",
+                lblShopAddress: "ဆိုင်လိပ်စာ (Address):",
+                lblShopPhone: "ဖုန်းနံပါတ် (Phone Number):",
+                lblShopFooter: "ဖြတ်ပိုင်းအောက်ခြေတွင် ပြသမည့် စာသား (Footer Note):",
+                btnSave: "💾 ဆက်တင်များ သိမ်းမည်",
+                backDashboard: "⬅ Dashboard သို့ ပြန်ရန်",
+                alertSuccess: "Printer ဆက်တင်များနှင့် ဆိုင်အချက်အလက်များ အောင်မြင်စွာ သိမ်းဆည်းပြီးပါပြီ။"
+            },
+            en: {
+                pageTitle: "Printer & Receipt Setup",
+                pageHeading: "🖨️ Printer & Receipt Setup",
+                pageDesc: "Configure shop information for Thermal Receipt Printer (Bluetooth / USB).",
+                lblShopName: "Shop Name:",
+                lblShopAddress: "Shop Address:",
+                lblShopPhone: "Phone Number:",
+                lblShopFooter: "Footer Note:",
+                btnSave: "💾 Save Settings",
+                backDashboard: "⬅ Back to Dashboard",
+                alertSuccess: "Printer settings and shop information saved successfully."
+            }
+        };
+
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('pageTitle').innerText = t.pageTitle;
+            document.getElementById('pageHeading').innerText = t.pageHeading;
+            document.getElementById('pageDesc').innerText = t.pageDesc;
+            document.getElementById('lblShopName').innerText = t.lblShopName;
+            document.getElementById('lblShopAddress').innerText = t.lblShopAddress;
+            document.getElementById('lblShopPhone').innerText = t.lblShopPhone;
+            document.getElementById('lblShopFooter').innerText = t.lblShopFooter;
+            document.getElementById('btnSave').innerText = t.btnSave;
+            document.getElementById('backDashboard').innerText = t.backDashboard;
+        }
+
+        function savePrinterSettings() {
+            const name = document.getElementById('shopName').value;
+            const address = document.getElementById('shopAddress').value;
+            const phone = document.getElementById('shopPhone').value;
+            const footer = document.getElementById('shopFooter').value;
+
+            localStorage.setItem('pos_shop_name', name);
+            localStorage.setItem('pos_shop_address', address);
+            localStorage.setItem('pos_shop_phone', phone);
+            localStorage.setItem('pos_shop_footer', footer);
+
+            const savedLang = localStorage.getItem('pos_lang') || 'my';
+            const alertMsg = translations[savedLang].alertSuccess;
+            alert(alertMsg);
+        }
+
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            const savedLang = localStorage.getItem('pos_lang') || 'my';
+            applyLanguage(savedLang);
+        };
+    </script>
+</body>
+</html>

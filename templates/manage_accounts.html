@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">ဆိုင်အကောင့်များ စီမံရန်နှင့် လက်ကျန်စာရင်း</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode .container {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border-color: #334155 !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        body.dark-mode input {
+            background-color: #0f172a !important;
+            color: white !important;
+            border-color: #334155 !important;
+        }
+        body.dark-mode table, body.dark-mode th, body.dark-mode td {
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        body.dark-mode th {
+            background-color: #0f172a !important;
+        }
+        body.dark-mode .dropdown-menu {
+            background-color: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        body { 
+            font-family: 'Pyidaungsu', sans-serif; 
+            background: var(--bg-main); 
+            color: var(--text-main);
+            padding: 20px; 
+            transition: background 0.3s, color 0.3s;
+        }
+        .container { 
+            max-width: 850px; 
+            margin: 0 auto; 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 8px 0 15px 0; 
+            border: 1px solid var(--border-color); 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-family: inherit;
+        }
+        .btn-add { 
+            background: #16a34a; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+        .btn-save-all {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: 15px;
+        }
+        .btn-save-all:hover {
+            opacity: 0.9;
+        }
+
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            padding: 12px; 
+            border-bottom: 1px solid var(--border-color); 
+            text-align: left; 
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .dots-btn {
+            background: #e2e8f0;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #1e293b;
+            padding: 4px 12px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        body.dark-mode .dots-btn {
+            background: #334155;
+            color: #f8fafc;
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background-color: #ffffff;
+            min-width: 110px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            z-index: 99;
+            overflow: hidden;
+        }
+        .dropdown-menu.show {
+            display: block;
+        }
+        .dropdown-item {
+            width: 100%;
+            padding: 10px 14px;
+            text-align: left;
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ef4444;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+        .dropdown-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="pageHeading" style="margin-top: 0;">🏦 ဆိုင်အကောင့်များ စီမံရန်နှင့် လက်ကျန်ငွေစာရင်း</h2>
+        
+        <form method="POST" style="background: rgba(0,0,0,0.02); padding: 15px; border-radius: 8px; border: 1px dashed var(--border-color);">
+            <input type="hidden" name="action" value="add">
+            <h3 id="formTitle" style="margin-top: 0; font-size: 16px;">➕ အကောင့်အသစ် ထည့်သွင်းရန်</h3>
+            <label id="lblAccName">အကောင့်အမည် (ဥပမာ - KBZ Pay Agent 2):</label>
+            <input type="text" name="account_name" required>
+            <label id="lblInitialBal">အစပိုင်း လက်ကျန်ငွေ (Initial Balance):</label>
+            <input type="number" name="initial_balance" value="0" required>
+            <button type="submit" class="btn-add" id="btnAddAcc">အကောင့်အသစ် သိမ်းမည်</button>
+        </form>
+
+        <h3 id="tableTitle" style="margin-top: 30px;">📋 ရှိပြီးသား အကောင့်များ နှင့် ပြင်ဆင်ရန်</h3>
+        
+        <form method="POST" id="bulkEditForm">
+            <input type="hidden" name="action" value="edit_all">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="thNo" style="width: 10%;">စဉ်</th>
+                            <th id="thAccName" style="width: 40%;">အကောင့်အမည်</th>
+                            <th id="thBalance" style="width: 35%;">လက်ကျန်ငွေ (Ks)</th>
+                            <th id="thAction" style="width: 15%; text-align: center;">လုပ်ဆောင်ချက်</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if accounts %}
+                            {% for acc in accounts %}
+                            <tr>
+                                <td>{{ loop.index }}</td>
+                                <td>
+                                    <input type="hidden" name="account_id_{{ loop.index0 }}" value="{{ acc[0] }}">
+                                    <input type="text" name="account_name_{{ loop.index0 }}" value="{{ acc[1] }}" style="margin: 0; padding: 6px;" required>
+                                </td>
+                                <td>
+                                    <input type="number" name="balance_{{ loop.index0 }}" value="{{ acc[2] }}" style="margin: 0; padding: 6px;" required>
+                                </td>
+                                <td style="text-align: center;">
+                                    <div class="dropdown">
+                                        <button type="button" class="dots-btn" onclick="toggleDropdown(event, {{ acc[0] }})">⋮</button>
+                                        <div class="dropdown-menu" id="dropdown{{ acc[0] }}">
+                                            <button type="submit" formaction="/delete_account/{{ acc[0] }}" formmethod="POST" class="dropdown-item btn-delete-text" onclick="return confirm('ဒီအကောင့်ကို ဖျက်မှာ သေချာပါသလား?');">🗑️ Delete</button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            <input type="hidden" name="total_count" value="{{ accounts|length }}">
+                        {% else %}
+                            <tr>
+                                <td colspan="4" id="tdNoData" style="text-align: center; color: var(--text-muted); padding: 20px;">အကောင့် တစ်စုံတစ်ရာ မရှိသေးပါ။</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if accounts %}
+            <button type="submit" class="btn-save-all" id="btnSaveAll">💾 သိမ်းဆည်းမည်</button>
+            {% endif %}
+        </form>
+
+        <div style="clear: both;"><br></div>
+        <a href="/dashboard" id="backDashboard" style="text-decoration: none; color: var(--primary); font-weight: bold;">⬅ Dashboard သို့ ပြန်ရန်</a>
+    </div>
+
+    <script>
+        const translations = {
+            my: {
+                pageTitle: "ဆိုင်အကောင့်များ စီမံရန်နှင့် လက်ကျန်စာရင်း",
+                pageHeading: "🏦 ဆိုင်အကောင့်များ စီမံရန်နှင့် လက်ကျန်ငွေစာရင်း",
+                formTitle: "➕ အကောင့်အသစ် ထည့်သွင်းရန်",
+                lblAccName: "အကောင့်အမည် (ဥပမာ - KBZ Pay Agent 2):",
+                lblInitialBal: "အစပိုင်း လက်ကျန်ငွေ (Initial Balance):",
+                btnAddAcc: "အကောင့်အသစ် သိမ်းမည်",
+                tableTitle: "📋 ရှိပြီးသား အကောင့်များ နှင့် ပြင်ဆင်ရန်",
+                thNo: "စဉ်",
+                thAccName: "အကောင့်အမည်",
+                thBalance: "လက်ကျန်ငွေ (Ks)",
+                thAction: "လုပ်ဆောင်ချက်",
+                tdNoData: "အကောင့် တစ်စုံတစ်ရာ မရှိသေးပါ။",
+                btnSaveAll: "💾 သိမ်းဆည်းမည်",
+                backDashboard: "⬅ Dashboard သို့ ပြန်ရန်",
+                deleteText: "🗑️ ဖျက်မည်"
+            },
+            en: {
+                pageTitle: "Manage Shop Accounts & Balances",
+                pageHeading: "🏦 Manage Shop Accounts & Balances",
+                formTitle: "➕ Add New Account",
+                lblAccName: "Account Name (e.g. - KBZ Pay Agent 2):",
+                lblInitialBal: "Initial Balance:",
+                btnAddAcc: "Save New Account",
+                tableTitle: "📋 Existing Accounts & Management",
+                thNo: "No.",
+                thAccName: "Account Name",
+                thBalance: "Balance (Ks)",
+                thAction: "Action",
+                tdNoData: "No accounts found.",
+                btnSaveAll: "💾 Save All Changes",
+                backDashboard: "⬅ Back to Dashboard",
+                deleteText: "🗑️ Delete"
+            }
+        };
+
+        function applyLanguage(lang) {
+            const t = translations[lang];
+            if (!t) return;
+
+            document.getElementById('pageTitle').innerText = t.pageTitle;
+            document.getElementById('pageHeading').innerText = t.pageHeading;
+            document.getElementById('formTitle').innerText = t.formTitle;
+            document.getElementById('lblAccName').innerText = t.lblAccName;
+            document.getElementById('lblInitialBal').innerText = t.lblInitialBal;
+            document.getElementById('btnAddAcc').innerText = t.btnAddAcc;
+            document.getElementById('tableTitle').innerText = t.tableTitle;
+            document.getElementById('thNo').innerText = t.thNo;
+            document.getElementById('thAccName').innerText = t.thAccName;
+            document.getElementById('thBalance').innerText = t.thBalance;
+            document.getElementById('thAction').innerText = t.thAction;
+            
+            const tdNoData = document.getElementById('tdNoData');
+            if (tdNoData) tdNoData.innerText = t.tdNoData;
+
+            const btnSaveAll = document.getElementById('btnSaveAll');
+            if (btnSaveAll) btnSaveAll.innerText = t.btnSaveAll;
+
+            document.getElementById('backDashboard').innerText = t.backDashboard;
+
+            document.querySelectorAll('.btn-delete-text').forEach(el => {
+                el.innerText = t.deleteText;
+            });
+        }
+
+        function toggleDropdown(event, id) {
+            event.stopPropagation();
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu.id !== 'dropdown' + id) {
+                    menu.classList.remove('show');
+                }
+            });
+            document.getElementById('dropdown' + id).classList.toggle('show');
+        }
+
+        window.onclick = function() {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        };
+
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            const savedLang = localStorage.getItem('pos_lang') || 'my';
+            applyLanguage(savedLang);
+        };
+    </script>
+</body>
+</html>

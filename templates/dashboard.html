@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MFS POS - Professional Dashboard</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --cash-in: #10b981;
+            --cash-out: #ef4444;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+        body.dark-mode th {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        body.dark-mode input, body.dark-mode select {
+            background-color: #0f172a;
+            color: white;
+            border-color: var(--border-color);
+        }
+
+        body {
+            font-family: 'Pyidaungsu', 'Padauk', 'Myanmar Text', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+
+        /* Menu ပွင့်နေစဉ် နောက်ခံ scrolling ကို တားဆီးရန် */
+        body.drawer-open {
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .navbar {
+            background-color: #0f172a;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+        .navbar h2 {
+            margin: 0;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 22px;
+            cursor: pointer;
+            padding: 0;
+        }
+        .user-badge {
+            font-size: 12px;
+            background: #1e293b;
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 15px auto;
+            padding: 0 10px;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 15px;
+            box-sizing: border-box;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: #eff6ff;
+            color: var(--primary);
+        }
+
+        .tab-switch {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background: #f1f5f9;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        body.dark-mode .tab-btn {
+            background: #334155;
+            color: #f8fafc;
+            border-color: #475569;
+        }
+        .tab-btn.active-in {
+            background-color: var(--cash-in) !important;
+            color: white !important;
+            border-color: var(--cash-in) !important;
+        }
+        .tab-btn.active-out {
+            background-color: var(--cash-out) !important;
+            color: white !important;
+            border-color: var(--cash-out) !important;
+        }
+
+        .account-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        .account-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            background: var(--card-bg);
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+        body.dark-mode .account-card {
+            background: #1e293b;
+            color: #f8fafc;
+            border-color: #334155;
+        }
+        .account-card input {
+            display: none;
+        }
+        .account-card:has(input:checked) {
+            border-color: var(--primary);
+            background-color: #eff6ff;
+        }
+        body.dark-mode .account-card:has(input:checked) {
+            background-color: #1e3a8a;
+            border-color: #3b82f6;
+        }
+        .account-name {
+            font-weight: bold;
+            font-size: 13px;
+            color: var(--text-main);
+        }
+        body.dark-mode .account-card .account-name {
+            color: #f8fafc;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--cash-in);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .summary-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+
+        .drawer-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+        .settings-drawer {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 1001;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            padding: 15px;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+        body.dark-mode .settings-drawer {
+            background: #1e293b;
+            color: #f8fafc;
+        }
+        .settings-drawer.open {
+            left: 0;
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+        }
+        .close-drawer {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: inherit;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            min-width: 500px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="nav-left">
+            <button class="menu-btn" onclick="toggleDrawer()">☰</button>
+            <h2 id="navTitle">MFS POS Agent System</h2>
+        </div>
+        <div>
+            <span class="user-badge">👤 {{ username }}</span>
+        </div>
+    </div>
+
+    <div class="drawer-backdrop" id="backdrop" onclick="toggleDrawer()"></div>
+    <div class="settings-drawer" id="settingsDrawer">
+        <div class="drawer-header">
+            <h3 id="menuHeader">⚙️ စနစ် မီနူးများ</h3>
+            <button class="close-drawer" onclick="toggleDrawer()">✕</button>
+        </div>
+        <div class="sidebar-nav">
+            <a href="/dashboard" class="nav-item active" id="navDashboard">📊 Dashboard (ပင်မစာမျက်နှာ)</a>
+            <a href="/history" class="nav-item" id="navHistory">💸 ငွေလွှဲ/ငွေထုတ် မှတ်တမ်းများ</a>
+            <a href="/manage_accounts" class="nav-item" id="navManageAccounts">🏦 ဆိုင်အကောင့်များ စီမံရန်</a>
+            <a href="/account_settings" class="nav-item" id="navAccountSettings">⚙️ ဆိုင်အကောင့် ဆက်တင် (Account Settings)</a>
+            <a href="/shift_close" class="nav-item" id="navShiftClose">📑 တစ်နေ့တာ စာရင်းချုပ် (Shift Close)</a>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+            <div style="margin-bottom: 15px;">
+                <label id="lblLang">ဘာသာစကား (Language)</label>
+                <select id="languageSelect" style="margin-top: 5px;" onchange="changeLanguage(this.value)">
+                    <option value="my">🇲🇲 မြန်မာ</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label id="lblTheme">Color Theme</label>
+                <select id="themeSelect" style="margin-top: 5px;" onchange="changeTheme(this.value)">
+                    <option value="light">☀️ Light Mode</option>
+                    <option value="dark">🌙 Dark Mode</option>
+                </select>
+            </div>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+            <a href="/printer_setup" class="nav-item" id="navPrinter">🖨️ Printer & Receipt Setup</a>
+            <a href="/backup" class="nav-item" id="navBackup">💾 ဒေတာ Backup ထုတ်ရန်</a>
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 10px 0;">
+            <form action="/logout" method="POST">
+                <button type="submit" id="btnLogout" style="width: 100%; padding: 10px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">အကောင့်ထွက်မည် (Logout)</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <div>
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div style="margin-bottom: 15px;">
+                  {% for category, message in messages %}
+                    <div style="padding: 10px 12px; margin-bottom: 8px; border-radius: 8px; color: #fff; font-weight: 500; background-color: {{ '#dc3545' if category == 'error' else ('#ffc107' if category == 'warning' else '#10b981') }}; font-size: 13px;">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="card">
+                <h3 id="formTitle" style="margin-top: 0; margin-bottom: 12px; font-size: 16px;">ငွေလွှဲ / ငွေထုတ် လုပ်ဆောင်ရန်</h3>
+                
+                <div class="tab-switch">
+                    <button type="button" class="tab-btn active-in" id="cashInBtn" onclick="setMode('in')">ငွေလွှဲ (Cash In)</button>
+                    <button type="button" class="tab-btn" id="cashOutBtn" onclick="setMode('out')">ငွေထုတ် (Cash Out)</button>
+                </div>
+
+                <form action="/add_transaction" method="POST" id="posForm">
+                    <input type="hidden" name="tx_type" id="txTypeInput" value="cash_in">
+                    
+                    <label id="lblSelectAcc">ဆိုင်အကောင့် ရွေးချယ်ရန်</label>
+                    <div class="account-grid">
+                        {% for acc in accounts %}
+                        <label class="account-card">
+                            <input type="radio" name="account" value="{{ acc[0] }}" {% if loop.first %}checked{% endif %}>
+                            <div class="account-name">{{ acc[0] }}</div>
+                            <span class="lbl-balance-text" style="font-size: 11px; color: var(--text-muted);">လက်ကျန်: {{ "{:,.0f}".format(acc[1]) }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblPhone">ဖုန်းနံပါတ် / အကောင့်နံပါတ်</label>
+                        <input type="text" name="phone_number" id="inputPhone" placeholder="09xxxxxxxxx သို့ အကောင့်အမည်" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblAmount">ငွေပမာဏ (ကျပ်)</label>
+                        <input type="number" name="amount" id="amountInput" placeholder="ငွေပမာဏ ရိုက်ထည့်ပါ" oninput="calculateCommission()" required>
+                        <span id="formattedAmount" style="font-size: 12px; color: var(--primary); font-weight: bold;"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblFee">ကော်မရှင် (ခွန်) - (Auto Calculated)</label>
+                        <input type="number" name="fee" id="feeInput" placeholder="ကော်မရှင် ကျသင့်ငွေ" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label id="lblNote">မှတ်ချက် (Note)</label>
+                        <input type="text" name="note" id="inputNote" placeholder="အမည် သို့မဟုတ် အမှတ်အသား (လိုလျှင်)">
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">ငွေလွှဲစာရင်း အတည်ပြုမည်</button>
+                </form>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="card">
+                <h3 id="recentTxHeader" style="margin-top: 0; font-size: 16px;">လတ်တလော ပြုလုပ်ထားသော စာရင်းများ</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th id="thNo">စဉ်</th>
+                                <th id="thType">အမျိုးအစား</th>
+                                <th id="thAcc">အကောင့်</th>
+                                <th id="thPhone">ဖုန်းနံပါတ်</th>
+                                <th id="thAmount">ပမာဏ</th>
+                                <th id="thFee">ကော်မရှင်</th>
+                                <th id="thNote">မှတ်ချက်</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if transactions %}
+                                {% for tx in transactions %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        {% if tx[0] == 'cash_in' %}
+                                            <span style="color: #10b981; font-weight: bold;">ငွေလွှဲ (Cash In)</span>
+                                        {% else %}
+                                            <span style="color: #ef4444; font-weight: bold;">ငွေထုတ် (Cash Out)</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><strong>{{ tx[1] }}</strong></td>
+                                    <td>{{ tx[2] }}</td>
+                                    <td>{{ "{:,.0f}".format(tx[3]) }} Ks</td>
+                                    <td style="color: #16a34a; font-weight: bold;">{{ "{:,.0f}".format(tx[4]) }} Ks</td>
+                                    <td>{{ tx[5] if tx[5] else '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="7" id="tdNoData" style="text-align: center; color: var(--text-muted);">ယနေ့အတွက် မှတ်တမ်း မရှိသေးပါ။</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h3 id="summaryTitle" style="margin-top: 0; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; font-size: 16px;">ယနေ့ ငွေစာရင်း အနှစ်ချုပ်</h3>
+                <div class="summary-box">
+                    <div class="summary-item">
+                        <span id="lblCashInHand" style="color: var(--text-muted);">အပြင်ငွေသား (Cash in Hand):</span>
+                        <strong style="font-size: 15px; color: var(--primary);">2,500,000 Ks</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span id="lblTotalIn" style="color: var(--text-muted);">စုစုပေါင်း ငွေဝင် (Cash In):</span>
+                        <span style="color: var(--cash-in); font-weight: bold;">{{ "{:,.0f}".format(total_cash_in) }} Ks</span>
+                    </div>
+                    <div class="summary-item">
+                        <span id="lblTotalOut" style="color: var(--text-muted);">စုစုပေါင်း ငွေထွက် (Cash Out):</span>
+                        <span style="color: var(--cash-out); font-weight: bold;">{{ "{:,.0f}".format(total_cash_out) }} Ks</span>
+                    </div>
+                    <div class="summary-item">
+                        <span id="lblTotalFee" style="color: var(--text-muted);">ရရှိကော်မရှင် စုစုပေါင်း:</span>
+                        <strong style="color: #16a34a;">{{ "{:,.0f}".format(total_commission) }} Ks</strong>
+                    </div>
+                </div>
+                <button id="btnShiftClose" style="width: 100%; margin-top: 15px; padding: 10px; background: #0f172a; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;" onclick="window.location.href='/shift_close'">📑 ညဆိုင်ပိတ်ချိန် စာရင်းချုပ်ရန် (Shift Close)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const translations = {
+            my: {
+                navTitle: "MFS POS Agent System",
+                menuHeader: "⚙️ စနစ် မီနူးများ",
+                navDashboard: "📊 Dashboard (ပင်မစာမျက်နှာ)",
+                navHistory: "💸 ငွေလွှဲ/ငွေထုတ် မှတ်တမ်းများ",
+                navManageAccounts: "🏦 ဆိုင်အကောင့်များ စီမံရန်",
+                navAccountSettings: "⚙️ ဆိုင်အကောင့် ဆက်တင် (Account Settings)",
+                navShiftClose: "📑 တစ်နေ့တာ စာရင်းချုပ် (Shift Close)",
+                lblLang: "ဘာသာစကား (Language)",
+                lblTheme: "Color Theme",
+                navPrinter: "🖨️ Printer & Receipt Setup",
+                navBackup: "💾 ဒေတာ Backup ထုတ်ရန်",
+                btnLogout: "အကောင့်ထွက်မည် (Logout)",
+                formTitle: "ငွေလွှဲ / ငွေထုတ် လုပ်ဆောင်ရန်",
+                cashInBtn: "ငွေလွှဲ (Cash In)",
+                cashOutBtn: "ငွေထုတ် (Cash Out)",
+                lblSelectAcc: "ဆိုင်အကောင့် ရွေးချယ်ရန်",
+                lblPhone: "ဖုန်းနံပါတ် / အကောင့်နံပါတ်",
+                inputPhone: "09xxxxxxxxx သို့ အကောင့်အမည်",
+                lblAmount: "ငွေပမာဏ (ကျပ်)",
+                inputAmount: "ငွေပမာဏ ရိုက်ထည့်ပါ",
+                lblFee: "ကော်မရှင် (ခွန်) - (Auto Calculated)",
+                inputFee: "ကော်မရှင် ကျသင့်ငွေ",
+                lblNote: "မှတ်ချက် (Note)",
+                inputNote: "အမည် သို့မဟုတ် အမှတ်အသား (လိုလျှင်)",
+                submitBtnIn: "ငွေလွှဲစာရင်း အတည်ပြုမည်",
+                submitBtnOut: "ငွေထုတ်စာရင်း အတည်ပြုမည်",
+                recentTxHeader: "လတ်တလော ပြုလုပ်ထားသော စာရင်းများ",
+                thNo: "စဉ်",
+                thType: "အမျိုးအစား",
+                thAcc: "အကောင့်",
+                thPhone: "ဖုန်းနံပါတ်",
+                thAmount: "ပမာဏ",
+                thFee: "ကော်မရှင်",
+                thNote: "မှတ်ချက်",
+                tdNoData: "ယနေ့အတွက် မှတ်တမ်း မရှိသေးပါ။",
+                summaryTitle: "ယနေ့ ငွေစာရင်း အနှစ်ချုပ်",
+                lblCashInHand: "အပြင်ငွေသား (Cash in Hand):",
+                lblTotalIn: "စုစုပေါင်း ငွေဝင် (Cash In):",
+                lblTotalOut: "စုစုပေါင်း ငွေထွက် (Cash Out):",
+                lblTotalFee: "ရရှိကော်မရှင် စုစုပေါင်း:",
+                btnShiftClose: "📑 ညဆိုင်ပိတ်ချိန် စာရင်းချုပ်ရန် (Shift Close)"
+            },
+            en: {
+                navTitle: "MFS POS Agent System",
+                menuHeader: "⚙️ System Menu",
+                navDashboard: "📊 Dashboard",
+                navHistory: "💸 Transaction History",
+                navManageAccounts: "🏦 Manage Accounts",
+                navAccountSettings: "⚙️ Account Settings",
+                navShiftClose: "📑 Shift Close",
+                lblLang: "Language",
+                lblTheme: "Color Theme",
+                navPrinter: "🖨️ Printer & Receipt Setup",
+                navBackup: "💾 Backup Data",
+                btnLogout: "Logout",
+                formTitle: "New Transaction",
+                cashInBtn: "Cash In",
+                cashOutBtn: "Cash Out",
+                lblSelectAcc: "Select Account",
+                lblPhone: "Phone / Account No.",
+                inputPhone: "09xxxxxxxxx or Account Name",
+                lblAmount: "Amount (MMK)",
+                inputAmount: "Enter Amount",
+                lblFee: "Commission Fee (Auto Calculated)",
+                inputFee: "Commission Amount",
+                lblNote: "Note",
+                inputNote: "Name or Reference Note (Optional)",
+                submitBtnIn: "Confirm Cash In",
+                submitBtnOut: "Confirm Cash Out",
+                recentTxHeader: "Recent Transactions",
+                thNo: "No.",
+                thType: "Type",
+                thAcc: "Account",
+                thPhone: "Phone No.",
+                thAmount: "Amount",
+                thFee: "Fee",
+                thNote: "Note",
+                tdNoData: "No transactions today.",
+                summaryTitle: "Today's Summary",
+                lblCashInHand: "Cash in Hand:",
+                lblTotalIn: "Total Cash In:",
+                lblTotalOut: "Total Cash Out:",
+                lblTotalFee: "Total Commission:",
+                btnShiftClose: "📑 Close Shift"
+            }
+        };
+
+        let currentLang = 'my';
+        let currentMode = 'in';
+
+        function applyLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang];
+
+            document.getElementById('navTitle').innerText = t.navTitle;
+            document.getElementById('menuHeader').innerText = t.menuHeader;
+            document.getElementById('navDashboard').innerText = t.navDashboard;
+            document.getElementById('navHistory').innerText = t.navHistory;
+            document.getElementById('navManageAccounts').innerText = t.navManageAccounts;
+            document.getElementById('navAccountSettings').innerText = t.navAccountSettings;
+            document.getElementById('navShiftClose').innerText = t.navShiftClose;
+            document.getElementById('lblLang').innerText = t.lblLang;
+            document.getElementById('lblTheme').innerText = t.lblTheme;
+            document.getElementById('navPrinter').innerText = t.navPrinter;
+            document.getElementById('navBackup').innerText = t.navBackup;
+            document.getElementById('btnLogout').innerText = t.btnLogout;
+            document.getElementById('formTitle').innerText = t.formTitle;
+            document.getElementById('cashInBtn').innerText = t.cashInBtn;
+            document.getElementById('cashOutBtn').innerText = t.cashOutBtn;
+            document.getElementById('lblSelectAcc').innerText = t.lblSelectAcc;
+            document.getElementById('lblPhone').innerText = t.lblPhone;
+            document.getElementById('inputPhone').placeholder = t.inputPhone;
+            document.getElementById('lblAmount').innerText = t.lblAmount;
+            document.getElementById('amountInput').placeholder = t.inputAmount;
+            document.getElementById('lblFee').innerText = t.lblFee;
+            document.getElementById('feeInput').placeholder = t.inputFee;
+            document.getElementById('lblNote').innerText = t.lblNote;
+            document.getElementById('inputNote').placeholder = t.inputNote;
+            
+            document.getElementById('submitBtn').innerText = (currentMode === 'in') ? t.submitBtnIn : t.submitBtnOut;
+
+            document.getElementById('recentTxHeader').innerText = t.recentTxHeader;
+            document.getElementById('thNo').innerText = t.thNo;
+            document.getElementById('thType').innerText = t.thType;
+            document.getElementById('thAcc').innerText = t.thAcc;
+            document.getElementById('thPhone').innerText = t.thPhone;
+            document.getElementById('thAmount').innerText = t.thAmount;
+            document.getElementById('thFee').innerText = t.thFee;
+            document.getElementById('thNote').innerText = t.thNote;
+            
+            const tdNoData = document.getElementById('tdNoData');
+            if(tdNoData) tdNoData.innerText = t.tdNoData;
+
+            document.getElementById('summaryTitle').innerText = t.summaryTitle;
+            document.getElementById('lblCashInHand').innerText = t.lblCashInHand;
+            document.getElementById('lblTotalIn').innerText = t.lblTotalIn;
+            document.getElementById('lblTotalOut').innerText = t.lblTotalOut;
+            document.getElementById('lblTotalFee').innerText = t.lblTotalFee;
+            document.getElementById('btnShiftClose').innerText = t.btnShiftClose;
+            
+            document.querySelectorAll('.lbl-balance-text').forEach(el => {
+                const balVal = el.innerText.split(':')[1] || '';
+                el.innerText = (lang === 'en' ? 'Balance:' : 'လက်ကျန်:') + balVal;
+            });
+        }
+
+        function changeLanguage(lang) {
+            localStorage.setItem('pos_lang', lang);
+            applyLanguage(lang);
+        }
+
+        function toggleDrawer() {
+            const drawer = document.getElementById('settingsDrawer');
+            const backdrop = document.getElementById('backdrop');
+            drawer.classList.toggle('open');
+            
+            if (drawer.classList.contains('open')) {
+                backdrop.style.display = 'block';
+                document.body.classList.add('drawer-open');
+            } else {
+                backdrop.style.display = 'none';
+                document.body.classList.remove('drawer-open');
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const inBtn = document.getElementById('cashInBtn');
+            const outBtn = document.getElementById('cashOutBtn');
+            const txTypeInput = document.getElementById('txTypeInput');
+            const submitBtn = document.getElementById('submitBtn');
+            const t = translations[currentLang];
+
+            if (mode === 'in') {
+                inBtn.className = 'tab-btn active-in';
+                outBtn.className = 'tab-btn';
+                txTypeInput.value = 'cash_in';
+                submitBtn.style.backgroundColor = 'var(--cash-in)';
+                submitBtn.innerText = t.submitBtnIn;
+            } else {
+                inBtn.className = 'tab-btn';
+                outBtn.className = 'tab-btn active-out';
+                txTypeInput.value = 'cash_out';
+                submitBtn.style.backgroundColor = 'var(--cash-out)';
+                submitBtn.innerText = t.submitBtnOut;
+            }
+        }
+
+        function calculateCommission() {
+            const amount = document.getElementById('amountInput').value;
+            const feeInput = document.getElementById('feeInput');
+            const formattedSpan = document.getElementById('formattedAmount');
+
+            if (amount) {
+                const unitText = currentLang === 'en' ? ' MMK' : ' ကျပ်';
+                const formatted = Number(amount).toLocaleString() + unitText;
+                formattedSpan.innerText = formatted;
+                const autoFee = Math.round(amount * 0.005);
+                feeInput.value = autoFee;
+            } else {
+                formattedSpan.innerText = '';
+                feeInput.value = '';
+            }
+        }
+
+        function changeTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('pos_theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('pos_theme', 'light');
+            }
+        }
+
+        window.onload = function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                const themeSel = document.getElementById('themeSelect');
+                if(themeSel) themeSel.value = 'dark';
+            }
+
+            const savedLang = localStorage.getItem('pos_lang') || 'my';
+            const langSel = document.getElementById('languageSelect');
+            if(langSel) langSel.value = savedLang;
+            applyLanguage(savedLang);
+        };
+    </script>
+</body>
+</html>

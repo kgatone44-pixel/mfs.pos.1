@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ဆိုင်အကောင့် ဆက်တင် (Account Settings)</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #2563eb;
+            --border-color: #e2e8f0;
+        }
+
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        body {
+            font-family: 'Pyidaungsu', 'Padauk', 'Myanmar Text', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 40px auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        h2 { 
+            margin-top: 0; 
+            color: var(--primary); 
+            text-align: center; 
+        }
+
+        .form-group { 
+            margin-bottom: 15px; 
+        }
+
+        label { 
+            display: block; 
+            font-size: 13px; 
+            color: var(--text-muted); 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 15px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 12px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-save:hover { 
+            opacity: 0.9; 
+        }
+
+        .success-msg { 
+            background: #dcfce7; 
+            color: #16a34a; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+        }
+
+        .error-msg { 
+            background: #fee2e2; 
+            color: #ef4444; 
+            padding: 10px; 
+            border-radius: 6px; 
+            font-size: 13px; 
+            margin-bottom: 15px; 
+            text-align: center; 
+            font-weight: bold; 
+        }
+
+        .back-link { 
+            display: block; 
+            text-align: center; 
+            margin-top: 20px; 
+            text-decoration: none; 
+            color: var(--primary); 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 id="pageTitle">⚙️ ဆိုင်အကောင့် ဆက်တင်</h2>
+        
+        {% if success %}
+            <div class="success-msg">{{ success }}</div>
+        {% endif %}
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form action="/account_settings" method="POST">
+            <div class="form-group">
+                <label id="lblShopName">ဆိုင်အမည် (Shop Name)</label>
+                <input type="text" name="shop_name" value="{{ user[1] }}" required>
+            </div>
+            <div class="form-group">
+                <label id="lblUsername">Username (အကောင့်အမည်)</label>
+                <input type="text" name="username" value="{{ user[0] }}" required>
+            </div>
+            <div class="form-group">
+                <label id="lblPassword">စကားဝှက်အသစ် (New Password - မပြောင်းလိုလျှင် ကွက်လပ်ထားပါ)</label>
+                <input type="password" name="password" id="inputPassword" placeholder="စကားဝှက်အသစ် ထည့်ရန်">
+            </div>
+            <button type="submit" class="btn-save" id="btnSave">ပြောင်းလဲမှုများကို သိမ်းမည်</button>
+        </form>
+
+        <a href="/dashboard" class="back-link" id="lnkBack">⬅ Dashboard သို့ ပြန်ရန်</a>
+    </div>
+
+    <script>
+        const translations = {
+            my: {
+                pageTitle: "⚙️ ဆိုင်အကောင့် ဆက်တင်",
+                lblShopName: "ဆိုင်အမည် (Shop Name)",
+                lblUsername: "Username (အကောင့်အမည်)",
+                lblPassword: "စကားဝှက်အသစ် (New Password - မပြောင်းလိုလျှင် ကွက်လပ်ထားပါ)",
+                inputPassword: "စကားဝှက်အသစ် ထည့်ရန်",
+                btnSave: "ပြောင်းလဲမှုများကို သိမ်းမည်",
+                lnkBack: "⬅ Dashboard သို့ ပြန်ရန်"
+            },
+            en: {
+                pageTitle: "⚙️ Account Settings",
+                lblShopName: "Shop Name",
+                lblUsername: "Username",
+                lblPassword: "New Password (Leave blank to keep current)",
+                inputPassword: "Enter new password",
+                btnSave: "Save Changes",
+                lnkBack: "⬅ Back to Dashboard"
+            }
+        };
+
+        (function() {
+            const savedTheme = localStorage.getItem('pos_theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            const savedLang = localStorage.getItem('pos_lang') || 'my';
+            const t = translations[savedLang];
+            if (t) {
+                document.getElementById('pageTitle').innerText = t.pageTitle;
+                document.getElementById('lblShopName').innerText = t.lblShopName;
+                document.getElementById('lblUsername').innerText = t.lblUsername;
+                document.getElementById('lblPassword').innerText = t.lblPassword;
+                document.getElementById('inputPassword').placeholder = t.inputPassword;
+                document.getElementById('btnSave').innerText = t.btnSave;
+                document.getElementById('lnkBack').innerText = t.lnkBack;
+            }
+        })();
+    </script>
+</body>
+</html>
